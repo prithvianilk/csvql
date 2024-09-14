@@ -1,7 +1,7 @@
-package org.example.lexer;
+package com.prithvianilk.csvql.lexer;
 
-import org.example.interpreter.lexer.Lexer;
-import org.example.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.lexer.Lexer;
+import com.prithvianilk.csvql.interpreter.Token;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

@@ -1,6 +1,6 @@
-package org.example.interpreter.lexer;
+package com.prithvianilk.csvql.interpreter.lexer;
 
-import org.example.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.Token;
 
 import java.io.BufferedReader;
 import java.io.IOException;

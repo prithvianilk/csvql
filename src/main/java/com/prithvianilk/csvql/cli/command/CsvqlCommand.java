@@ -1,4 +1,4 @@
-package org.example.cli.command;
+package com.prithvianilk.csvql.cli.command;
 
 import picocli.CommandLine;
 

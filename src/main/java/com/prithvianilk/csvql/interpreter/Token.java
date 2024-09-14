@@ -1,4 +1,4 @@
-package org.example.interpreter;
+package com.prithvianilk.csvql.interpreter;
 
 public sealed interface Token permits
         Token.AllColumns,

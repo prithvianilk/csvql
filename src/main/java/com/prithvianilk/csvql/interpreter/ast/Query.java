@@ -1,6 +1,6 @@
-package org.example.interpreter.ast;
+package com.prithvianilk.csvql.interpreter.ast;
 
-import org.example.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.Token;
 
 import java.util.List;
 

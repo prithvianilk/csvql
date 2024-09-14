@@ -1,7 +1,7 @@
-package org.example.cli.command;
+package com.prithvianilk.csvql.cli.command;
 
-import org.example.interpreter.lexer.Lexer;
-import org.example.interpreter.parser.Parser;
+import com.prithvianilk.csvql.interpreter.lexer.Lexer;
+import com.prithvianilk.csvql.interpreter.parser.Parser;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;

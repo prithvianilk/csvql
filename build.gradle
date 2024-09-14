@@ -9,7 +9,7 @@ jar {
     }
 }
 
-group = 'org.example'
+group = 'com.prithvianilk'
 version = '1.0-SNAPSHOT'
 
 repositories {

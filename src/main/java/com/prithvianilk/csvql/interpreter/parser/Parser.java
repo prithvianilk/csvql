@@ -1,8 +1,8 @@
-package org.example.interpreter.parser;
+package com.prithvianilk.csvql.interpreter.parser;
 
-import org.example.interpreter.Token;
-import org.example.interpreter.ast.Query;
-import org.example.interpreter.lexer.Lexer;
+import com.prithvianilk.csvql.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.ast.Query;
+import com.prithvianilk.csvql.interpreter.lexer.Lexer;
 
 import java.util.ArrayList;
 import java.util.List;
