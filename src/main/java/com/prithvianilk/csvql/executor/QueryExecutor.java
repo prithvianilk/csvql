@@ -29,13 +29,7 @@ public class QueryExecutor {
         Parser parser = new Parser(new Lexer(query));
         this.query = parser.parse();
         this.writer = new StringWriter();
-    }
-
-    public String executeQuery() {
         initCsvReader();
-        initColumnIndices();
-        printRows();
-        return writer.toString();
     }
 
     private void initCsvReader() {
@@ -46,25 +40,43 @@ public class QueryExecutor {
         }
     }
 
-    private void initColumnIndices() {
+    public String executeQuery() {
+        executeColumnNames();
+        executeAllRows();
+        return writer.toString();
+    }
+
+    private void executeColumnNames() {
         String line = readLine().orElseThrow();
         List<String> columns = Arrays.asList(line.split(","));
 
+        columnIndices = initColumnIndices(columns);
+
+        String columnNamesRow = columnIndices
+                .stream()
+                .map(columns::get)
+                .collect(Collectors.joining(","));
+
+        writer.append(columnNamesRow);
+        writer.append("\n");
+    }
+
+    private List<Integer> initColumnIndices(List<String> columns) {
         if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
-            columnIndices = IntStream
+            return IntStream
                     .range(0, columns.size())
                     .boxed()
                     .toList();
-        } else {
-            columnIndices = query
-                    .getProjectableColumnNames()
-                    .stream()
-                    .map(columns::indexOf)
-                    .toList();
         }
+
+        return query
+                .getProjectableColumnNames()
+                .stream()
+                .map(columns::indexOf)
+                .toList();
     }
 
-    private void printRows() {
+    private void executeAllRows() {
         int rowCount = 0;
         while (true) {
             Optional<String> line = readLine();
@@ -76,11 +88,11 @@ public class QueryExecutor {
                 writer.append('\n');
             }
 
-            line.ifPresent(this::printRow);
+            line.ifPresent(this::executeRow);
         }
     }
 
-    private void printRow(String line) {
+    private void executeRow(String line) {
         List<String> items = Arrays.asList(line.split(","));
 
         String projectedRow = columnIndices
