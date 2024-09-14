@@ -23,6 +23,7 @@ class LexerTest {
         return Stream.of(
                 selectAllColumnsFromCsvFile(),
                 selectSingleColumnFromCsvFile(),
+                selectSingleColumnWithUnderscoreFromCsvFile(),
                 selectTwoColumnsFromCsvFile()
         );
     }
@@ -37,7 +38,7 @@ class LexerTest {
                         new Token.Identifier("results.csv")));
     }
 
-    private static Arguments selectSingleColumnFromCsvFile() {
+    static Arguments selectSingleColumnFromCsvFile() {
         return Arguments.of(
                 "select a from results.csv",
                 List.of(
@@ -47,7 +48,17 @@ class LexerTest {
                         new Token.Identifier("results.csv")));
     }
 
-    private static Arguments selectTwoColumnsFromCsvFile() {
+    static Arguments selectSingleColumnWithUnderscoreFromCsvFile() {
+        return Arguments.of(
+                "select a_1 from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Identifier("a_1"),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
+    }
+
+    static Arguments selectTwoColumnsFromCsvFile() {
         return Arguments.of(
                 "select a, b from results.csv",
                 List.of(
