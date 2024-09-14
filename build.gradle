@@ -1,15 +1,26 @@
 plugins {
+    id 'com.gradleup.shadow' version '8.3.1'
     id 'java'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.example.repl.CsvqlApplication'
+    }
 }
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    gradlePluginPortal()
     mavenCentral()
 }
 
 dependencies {
+    compileOnly 'com.gradleup.shadow:shadow-gradle-plugin:8.3.1'
+    implementation 'info.picocli:picocli:4.7.6'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
