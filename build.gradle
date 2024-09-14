@@ -5,7 +5,7 @@ plugins {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'org.example.repl.CsvqlApplication'
+        attributes 'Main-Class': 'com.prithvianilk.csvql.cli.CsvqlApplication'
     }
 }
 
