@@ -42,7 +42,7 @@ public class QueryExecutor {
         try {
             csvReader = new BufferedReader(new FileReader(query.csvFileName().value()));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new QueryExecutionException();
         }
     }
 
@@ -95,7 +95,7 @@ public class QueryExecutor {
         try {
             return Optional.ofNullable(csvReader.readLine());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new QueryExecutionException();
         }
     }
 }
