@@ -13,8 +13,7 @@ public class CsvqlCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         QueryExecutor queryExecutor = new QueryExecutor(query);
-        queryExecutor.executeQuery();
-
+        System.out.println(queryExecutor.executeQuery());
         return 0;
     }
 }

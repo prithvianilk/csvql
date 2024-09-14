@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,15 +23,19 @@ public class QueryExecutor {
 
     private List<Integer> columnIndices;
 
+    private final StringWriter writer;
+
     public QueryExecutor(String query) {
         Parser parser = new Parser(new Lexer(query));
         this.query = parser.parse();
+        this.writer = new StringWriter();
     }
 
-    public void executeQuery() {
+    public String executeQuery() {
         initCsvReader();
         initColumnIndices();
         printRows();
+        return writer.toString();
     }
 
     private void initCsvReader() {
@@ -41,11 +46,34 @@ public class QueryExecutor {
         }
     }
 
+    private void initColumnIndices() {
+        String line = readLine().orElseThrow();
+        List<String> columns = Arrays.asList(line.split(","));
+
+        if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
+            columnIndices = IntStream
+                    .range(0, columns.size())
+                    .boxed()
+                    .toList();
+        } else {
+            columnIndices = query
+                    .getProjectableColumnNames()
+                    .stream()
+                    .map(columns::indexOf)
+                    .toList();
+        }
+    }
+
     private void printRows() {
+        int rowCount = 0;
         while (true) {
             Optional<String> line = readLine();
             if (line.isEmpty()) {
                 break;
+            }
+
+            if (rowCount++ > 0) {
+                writer.append('\n');
             }
 
             line.ifPresent(this::printRow);
@@ -60,25 +88,7 @@ public class QueryExecutor {
                 .map(items::get)
                 .collect(Collectors.joining(","));
 
-        System.out.println(projectedRow);
-    }
-
-    private void initColumnIndices() {
-        String line = readLine().orElseThrow();
-        List<String> columns = Arrays.asList(line.split(","));
-
-        if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
-            columnIndices = IntStream
-                    .range(0, columns.size())
-                    .boxed()
-                    .toList();
-        } else {
-            List<String> projectableColumnNames = query.getProjectableColumnNames();
-            columnIndices = projectableColumnNames
-                    .stream()
-                    .map(columns::indexOf)
-                    .toList();
-        }
+        writer.append(projectedRow);
     }
 
     private Optional<String> readLine() {
