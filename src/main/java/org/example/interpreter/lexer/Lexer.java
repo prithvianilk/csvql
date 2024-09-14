@@ -1,4 +1,6 @@
-package org.example.lexer;
+package org.example.interpreter.lexer;
+
+import org.example.interpreter.Token;
 
 import java.io.BufferedReader;
 import java.io.IOException;

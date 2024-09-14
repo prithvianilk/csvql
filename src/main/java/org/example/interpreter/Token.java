@@ -1,4 +1,4 @@
-package org.example.lexer;
+package org.example.interpreter;
 
 public sealed interface Token permits
         Token.AllColumns,
