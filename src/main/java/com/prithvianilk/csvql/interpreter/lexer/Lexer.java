@@ -40,8 +40,11 @@ public class Lexer {
         return switch (word) {
             case "*" -> new Token.AllColumns();
             case "," -> new Token.Comma();
+            case "=" -> new Token.Equals();
             case "select" -> new Token.Select();
             case "from" -> new Token.From();
+            case "where" -> new Token.Where();
+            case "and" -> new Token.And();
             case EOF_STRING -> new Token.Eof();
             default -> new Token.Identifier(word);
         };
@@ -59,12 +62,8 @@ public class Lexer {
             c = readCharacter();
         }
 
-        if (c == EOF) {
-            return EOF_STRING;
-        } else if (c == '*') {
-            return "*";
-        } else if (c == ',') {
-            return ",";
+        if (c == EOF || c == '*' || c == ',' || c == '=') {
+            return String.valueOf(c);
         }
 
         StringWriter wordWriter = new StringWriter();

@@ -26,8 +26,57 @@ class LexerTest {
                 selectAllColumnsFromCsvFile(),
                 selectSingleColumnFromCsvFile(),
                 selectSingleColumnWithUnderscoreFromCsvFile(),
-                selectTwoColumnsFromCsvFile()
+                selectTwoColumnsFromCsvFile(),
+                selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
+                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue()
         );
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a = 1 and b = 2",
+                List.of(
+                        new Token.Select(),
+                        new Token.AllColumns(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.Equals(),
+                        new Token.Identifier("1"),
+                        new Token.And(),
+                        new Token.Identifier("b"),
+                        new Token.Equals(),
+                        new Token.Identifier("2")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a = 1",
+                List.of(
+                        new Token.Select(),
+                        new Token.AllColumns(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.Equals(),
+                        new Token.Identifier("1")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue() {
+        return Arguments.of(
+                "select * from results.csv where a = \"lol\"",
+                List.of(
+                        new Token.Select(),
+                        new Token.AllColumns(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.Equals(),
+                        new Token.Identifier("\"lol\"")));
     }
 
     static Arguments selectAllColumnsFromCsvFile() {
