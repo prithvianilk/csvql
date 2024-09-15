@@ -1,6 +1,6 @@
 package com.prithvianilk.csvql.interpreter;
 
-public sealed interface Token permits Token.AllColumns, Token.And, Token.Comma, Token.Eof, Token.Equals, Token.From, Token.Identifier, Token.Select, Token.Where {
+public sealed interface Token permits Token.AllColumns, Token.And, Token.Comma, Token.Eof, Token.Equals, Token.From, Token.Identifier, Token.Minus, Token.Plus, Token.Select, Token.Where {
 
     record Select() implements Token {
     }
@@ -27,6 +27,12 @@ public sealed interface Token permits Token.AllColumns, Token.And, Token.Comma, 
     }
 
     record And() implements Token {
+    }
+
+    record Plus() implements Token {
+    }
+
+    record Minus() implements Token {
     }
 }
 

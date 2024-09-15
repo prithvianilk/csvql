@@ -41,6 +41,8 @@ public class Lexer {
             case "*" -> new Token.AllColumns();
             case "," -> new Token.Comma();
             case "=" -> new Token.Equals();
+            case "+" -> new Token.Plus();
+            case "-" -> new Token.Minus();
             case "select" -> new Token.Select();
             case "from" -> new Token.From();
             case "where" -> new Token.Where();

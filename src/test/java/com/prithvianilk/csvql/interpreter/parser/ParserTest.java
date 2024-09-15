@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,13 +34,13 @@ class ParserTest {
     static Arguments selectAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select * from results.csv",
-                new Query(List.of(new Token.AllColumns()), new Token.Identifier("results.csv")));
+                new Query(List.of(new Token.AllColumns()), new Token.Identifier("results.csv"), Collections.emptyList()));
     }
 
     static Arguments selectSingleColumnFromCsvFile() {
         return Arguments.of(
                 "select a from results.csv",
-                new Query(List.of(new Token.Identifier("a")), new Token.Identifier("results.csv")));
+                new Query(List.of(new Token.Identifier("a")), new Token.Identifier("results.csv"), Collections.emptyList()));
     }
 
     static Arguments selectTwoColumnsFromCsvFile() {
@@ -47,6 +48,6 @@ class ParserTest {
                 "select a, b from results.csv",
                 new Query(
                         List.of(new Token.Identifier("a"), new Token.Identifier("b")),
-                        new Token.Identifier("results.csv")));
+                        new Token.Identifier("results.csv"), Collections.emptyList()));
     }
 }

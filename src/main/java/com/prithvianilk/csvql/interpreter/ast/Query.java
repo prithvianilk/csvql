@@ -7,7 +7,8 @@ import java.util.Optional;
 
 public record Query(
         List<Token> columnNameTokens,
-        Token.Identifier csvFileName) {
+        Token.Identifier csvFileName,
+        List<Conditional> conditionals) {
 
     public List<String> getProjectableColumnNames() {
         return columnNameTokens
