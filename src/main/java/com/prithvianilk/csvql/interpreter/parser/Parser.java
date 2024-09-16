@@ -48,6 +48,10 @@ public class Parser {
     }
 
     private Optional<Conditional> parseConditional() {
+        if (currentToken instanceof Token.Eof) {
+            return Optional.empty();
+        }
+
         Expression lhs = parseExpression();
         Conditional.Predicate predicate = parsePredicate();
         Expression rhs = parseExpression();

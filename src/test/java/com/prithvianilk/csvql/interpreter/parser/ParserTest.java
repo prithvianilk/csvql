@@ -1,5 +1,7 @@
 package com.prithvianilk.csvql.interpreter.parser;
 
+import com.prithvianilk.csvql.interpreter.ast.Conditional;
+import com.prithvianilk.csvql.interpreter.ast.Expression;
 import com.prithvianilk.csvql.interpreter.ast.Query;
 import com.prithvianilk.csvql.interpreter.Token;
 import com.prithvianilk.csvql.interpreter.lexer.Lexer;
@@ -27,7 +29,8 @@ class ParserTest {
         return Stream.of(
                 selectAllColumnsFromCsvFile(),
                 selectSingleColumnFromCsvFile(),
-                selectTwoColumnsFromCsvFile()
+                selectTwoColumnsFromCsvFile(),
+                selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue()
         );
     }
 
@@ -49,5 +52,19 @@ class ParserTest {
                 new Query(
                         List.of(new Token.Identifier("a"), new Token.Identifier("b")),
                         new Token.Identifier("results.csv"), Collections.emptyList()));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a = 1",
+                new Query(
+                        List.of(new Token.AllColumns()),
+                        new Token.Identifier("results.csv"),
+                        Collections.singletonList(
+                                new Conditional(
+                                        new Expression.Simple(new Token.Identifier("a")),
+                                        Conditional.Predicate.EQUALS,
+                                        new Expression.Simple(new Token.Identifier("1")))
+                        )));
     }
 }
