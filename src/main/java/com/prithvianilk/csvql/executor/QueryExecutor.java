@@ -136,7 +136,10 @@ public class QueryExecutor {
 
     private Expression.ValueType executeExpression(Expression expression, List<String> items) {
         return switch (expression) {
-            case Expression.Simple(Expression.ValueType value) -> value;
+            case Expression.Simple(Expression.ValueType valueType) -> {
+                int intValue = getIntValue(valueType, items);
+                yield new Expression.ValueType.Int(intValue);
+            }
             case Expression.Composite composite -> executeCompositeExpression(composite, items);
         };
     }
