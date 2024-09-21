@@ -1,42 +1,27 @@
 package com.prithvianilk.csvql.interpreter.ast;
 
-import com.prithvianilk.csvql.interpreter.Token;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-
 public sealed interface Expression permits Expression.Simple, Expression.Composite {
-    record Simple(Token.Identifier identifier) implements Expression {
+    record Simple(ValueType valueType) implements Expression {
     }
 
-    record Composite(Token.Identifier identifier, Operation operator, Expression nextExpression) implements Expression {
+    record Composite(
+            ValueType valueType,
+            Operation operation,
+            Expression nextExpression) implements Expression {
     }
 
     enum Operation {
-        PLUS("+"), MINUS("-");
+        PLUS, MINUS;
+    }
 
-        private final String literalValue;
-
-        Operation(String literalValue) {
-            this.literalValue = literalValue;
+    sealed interface ValueType permits ValueType.Int, ValueType.Str, ValueType.ColumnName {
+        record Int(int value) implements ValueType {
         }
 
-        public static Optional<Operation> fromLiteralValue(String literalValue) {
-            return Arrays
-                    .stream(Operation.values())
-                    .filter(operation -> operation.matches(literalValue))
-                    .findFirst();
+        record Str(String value) implements ValueType {
         }
 
-        private boolean matches(String literalValue) {
-            return Objects.equals(this.literalValue, literalValue);
-        }
-
-        public static boolean matchesAny(String literalValue) {
-            return Arrays
-                    .stream(Operation.values())
-                    .anyMatch(operation -> operation.matches(literalValue));
+        record ColumnName(String value) implements ValueType {
         }
     }
 }

@@ -42,6 +42,10 @@ public class Parser {
                 break;
             }
             conditional.ifPresent(conditionals::add);
+            if (!(currentToken instanceof Token.And)) {
+                break;
+            }
+            currentToken = lexer.nextToken();
         }
 
         return conditionals;
@@ -60,22 +64,37 @@ public class Parser {
 
     private Expression parseExpression() {
         Token prevToken = this.currentToken;
-        if (!(prevToken instanceof Token.Identifier identifier)) {
+        if (!(prevToken instanceof Token.Identifier(String value))) {
             throw new ParserException();
         }
+
+        Expression.ValueType valueType = parseValueType(value);
 
         currentToken = lexer.nextToken();
         return switch (currentToken) {
             case Token.Plus ignored -> {
                 currentToken = lexer.nextToken();
-                yield new Expression.Composite(identifier, Expression.Operation.PLUS, parseExpression());
+                yield new Expression.Composite(valueType, Expression.Operation.PLUS, parseExpression());
             }
             case Token.Minus ignored -> {
                 currentToken = lexer.nextToken();
-                yield new Expression.Composite(identifier, Expression.Operation.MINUS, parseExpression());
+                yield new Expression.Composite(valueType, Expression.Operation.MINUS, parseExpression());
             }
-            default -> new Expression.Simple(identifier);
+            default -> new Expression.Simple(valueType);
         };
+    }
+
+    private Expression.ValueType parseValueType(String value) {
+        if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+            return new Expression.ValueType.Str(value.substring(1, value.length() - 1));
+        }
+
+        try {
+            int intValue = Integer.parseInt(value);
+            return new Expression.ValueType.Int(intValue);
+        } catch (Exception e) {
+            return new Expression.ValueType.ColumnName(value);
+        }
     }
 
     private Conditional.Predicate parsePredicate() {

@@ -30,7 +30,8 @@ class ParserTest {
                 selectAllColumnsFromCsvFile(),
                 selectSingleColumnFromCsvFile(),
                 selectTwoColumnsFromCsvFile(),
-                selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue()
+                selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
+                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue()
         );
     }
 
@@ -62,9 +63,24 @@ class ParserTest {
                         new Token.Identifier("results.csv"),
                         Collections.singletonList(
                                 new Conditional(
-                                        new Expression.Simple(new Token.Identifier("a")),
+                                        new Expression.Simple(new Expression.ValueType.ColumnName("a")),
                                         Conditional.Predicate.EQUALS,
-                                        new Expression.Simple(new Token.Identifier("1")))
-                        )));
+                                        new Expression.Simple(new Expression.ValueType.Int(1))))));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a = 1 and b = 2",
+                new Query(
+                        List.of(new Token.AllColumns()),
+                        new Token.Identifier("results.csv"),
+                        List.of(new Conditional(
+                                        new Expression.Simple(new Expression.ValueType.ColumnName("a")),
+                                        Conditional.Predicate.EQUALS,
+                                        new Expression.Simple(new Expression.ValueType.Int(1))),
+                                new Conditional(
+                                        new Expression.Simple(new Expression.ValueType.ColumnName("b")),
+                                        Conditional.Predicate.EQUALS,
+                                        new Expression.Simple(new Expression.ValueType.Int(2))))));
     }
 }
