@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +26,7 @@ public class QueryExecutor {
 
     private BufferedReader csvReader;
 
-    private Map<String, Integer> columnNameToIndexMap;
+    private final Map<String, Integer> columnNameToIndexMap;
 
     private List<Integer> projectedColumnIndices;
 
@@ -35,6 +36,7 @@ public class QueryExecutor {
         Parser parser = new Parser(new Lexer(query));
         this.query = parser.parse();
         this.writer = new StringWriter();
+        this.columnNameToIndexMap = new HashMap<>();
         initCsvReader();
     }
 
@@ -53,10 +55,11 @@ public class QueryExecutor {
     }
 
     private void executeColumnNames() {
-        String line = readLine().orElseThrow();
+        String line = readLine().orElseThrow(QueryExecutionException::new);
         List<String> columns = Arrays.asList(line.split(","));
 
-        projectedColumnIndices = initColumnIndices(columns);
+        initColumnNameToIndexMap(columns);
+        initProjectedColumnIndics(columns);
 
         String columnNamesRow = projectedColumnIndices
                 .stream()
@@ -67,15 +70,21 @@ public class QueryExecutor {
         writer.append("\n");
     }
 
-    private List<Integer> initColumnIndices(List<String> columns) {
+    private void initColumnNameToIndexMap(List<String> columns) {
+        for (int i = 0; i < columns.size(); ++i) {
+            columnNameToIndexMap.put(columns.get(i), i);
+        }
+    }
+
+    private void initProjectedColumnIndics(List<String> columns) {
         if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
-            return IntStream
+            projectedColumnIndices = IntStream
                     .range(0, columns.size())
                     .boxed()
                     .toList();
         }
 
-        return query
+        projectedColumnIndices = query
                 .getProjectableColumnNames()
                 .stream()
                 .map(columns::indexOf)
@@ -83,26 +92,24 @@ public class QueryExecutor {
     }
 
     private void executeAllRows() {
-        int rowCount = 0;
         while (true) {
             Optional<String> line = readLine();
             if (line.isEmpty()) {
                 break;
             }
 
-            if (rowCount++ > 0) {
+            line.flatMap(this::executeRow).ifPresent(projectedRow -> {
+                writer.append(projectedRow);
                 writer.append('\n');
-            }
-
-            line.ifPresent(this::executeRow);
+            });
         }
     }
 
-    private void executeRow(String line) {
+    private Optional<String> executeRow(String line) {
         List<String> items = Arrays.asList(line.split(","));
 
         if (!rowSatisfiesAllConditions(items)) {
-            return;
+            return Optional.empty();
         }
 
         String projectedRow = projectedColumnIndices
@@ -110,7 +117,7 @@ public class QueryExecutor {
                 .map(items::get)
                 .collect(Collectors.joining(","));
 
-        writer.append(projectedRow);
+        return Optional.of(projectedRow);
     }
 
     private boolean rowSatisfiesAllConditions(List<String> items) {
