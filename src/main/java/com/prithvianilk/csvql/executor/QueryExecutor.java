@@ -59,7 +59,7 @@ public class QueryExecutor {
         List<String> columns = Arrays.asList(line.split(","));
 
         initColumnNameToIndexMap(columns);
-        initProjectedColumnIndics(columns);
+        initProjectedColumnIndices(columns);
 
         String columnNamesRow = projectedColumnIndices
                 .stream()
@@ -76,19 +76,19 @@ public class QueryExecutor {
         }
     }
 
-    private void initProjectedColumnIndics(List<String> columns) {
+    private void initProjectedColumnIndices(List<String> columns) {
         if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
             projectedColumnIndices = IntStream
                     .range(0, columns.size())
                     .boxed()
                     .toList();
+        } else {
+            projectedColumnIndices = query
+                    .getProjectableColumnNames()
+                    .stream()
+                    .map(columns::indexOf)
+                    .toList();
         }
-
-        projectedColumnIndices = query
-                .getProjectableColumnNames()
-                .stream()
-                .map(columns::indexOf)
-                .toList();
     }
 
     private void executeAllRows() {

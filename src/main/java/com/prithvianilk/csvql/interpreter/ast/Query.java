@@ -19,8 +19,8 @@ public record Query(
     }
 
     private Optional<String> getColumnName(Token token) {
-        if (token instanceof Token.Identifier identifier) {
-            return Optional.of(identifier.value());
+        if (token instanceof Token.Identifier(String value)) {
+            return Optional.of(value);
         }
         return Optional.empty();
     }
