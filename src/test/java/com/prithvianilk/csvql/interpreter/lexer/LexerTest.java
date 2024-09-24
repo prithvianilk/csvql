@@ -1,4 +1,4 @@
-package com.prithvianilk.csvql.lexer;
+package com.prithvianilk.csvql.interpreter.lexer;
 
 import com.prithvianilk.csvql.interpreter.lexer.Lexer;
 import com.prithvianilk.csvql.interpreter.Token;
