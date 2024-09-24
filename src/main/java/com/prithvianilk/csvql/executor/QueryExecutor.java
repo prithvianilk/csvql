@@ -44,7 +44,7 @@ public class QueryExecutor {
         try {
             csvReader = new BufferedReader(new FileReader(query.csvFileName().value()));
         } catch (FileNotFoundException e) {
-            throw new QueryExecutionException();
+            throw new QueryExecutionException.FileDoesNotExist(query.csvFileName().value());
         }
     }
 
@@ -55,7 +55,8 @@ public class QueryExecutor {
     }
 
     private void executeColumnNames() {
-        String line = readLine().orElseThrow(QueryExecutionException::new);
+        String line = readLine().orElseThrow(QueryExecutionException.UnhandledError::new);
+
         List<String> columns = Arrays.asList(line.split(","));
 
         initColumnNameToIndexMap(columns);
@@ -167,7 +168,7 @@ public class QueryExecutor {
         return switch (valueType) {
             case Expression.ValueType.ColumnName(String columnName) -> getItemValue(columnName, items);
             case Expression.ValueType.Int(int intValue) -> intValue;
-            default -> throw new QueryExecutionException();
+            default -> throw new QueryExecutionException.InvalidArgument();
         };
     }
 
@@ -180,7 +181,7 @@ public class QueryExecutor {
         try {
             return Optional.ofNullable(csvReader.readLine());
         } catch (IOException e) {
-            throw new QueryExecutionException();
+            throw new QueryExecutionException.UnhandledError();
         }
     }
 }

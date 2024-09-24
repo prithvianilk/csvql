@@ -1,5 +1,6 @@
 package com.prithvianilk.csvql.cli.command;
 
+import com.prithvianilk.csvql.executor.QueryExecutionException;
 import com.prithvianilk.csvql.executor.QueryExecutor;
 import picocli.CommandLine;
 
@@ -12,8 +13,20 @@ public class CsvqlCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        QueryExecutor queryExecutor = new QueryExecutor(query);
-        System.out.println(queryExecutor.executeQuery());
-        return 0;
+        try {
+            QueryExecutor queryExecutor = new QueryExecutor(query);
+            System.out.println(queryExecutor.executeQuery());
+            return 0;
+        } catch (QueryExecutionException e) {
+            System.err.println("Error:");
+            switch (e) {
+                case QueryExecutionException.FileDoesNotExist fileDoesNotExistException -> {
+                    System.err.println("File does not exist: " + fileDoesNotExistException.getFileName());
+                    System.err.println();
+                }
+                default -> System.err.println("Received exception: " + e);
+            }
+            return 1;
+        }
     }
 }
