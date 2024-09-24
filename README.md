@@ -13,11 +13,11 @@ yet another cli tool to query a csv w/ sql
 ### Select single / multiple specific columns
 
 ```sh
-./bin/csvql 'select col1, col2 from file.csv'
+./bin/csvql csvql 'select col1, col2 from file.csv'
 ```
 
 ### Conditions
 
 ```sh
-./bin/csvql 'select * from file.csv where col1 + col2 = 2'
+./bin/csvql csvql 'select * from file.csv where col1 + col2 = 2'
 ```
