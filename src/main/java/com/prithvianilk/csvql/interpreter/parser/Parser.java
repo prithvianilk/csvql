@@ -68,7 +68,7 @@ public class Parser {
             throw new ParserException();
         }
 
-        Expression.ValueType valueType = parseValueType(value);
+        Expression.Value valueType = parseValueType(value);
 
         currentToken = lexer.nextToken();
         return switch (currentToken) {
@@ -84,16 +84,16 @@ public class Parser {
         };
     }
 
-    private Expression.ValueType parseValueType(String value) {
+    private Expression.Value parseValueType(String value) {
         if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-            return new Expression.ValueType.Str(value.substring(1, value.length() - 1));
+            return new Expression.Value.Str(value.substring(1, value.length() - 1));
         }
 
         try {
             int intValue = Integer.parseInt(value);
-            return new Expression.ValueType.Int(intValue);
+            return new Expression.Value.Int(intValue);
         } catch (Exception e) {
-            return new Expression.ValueType.ColumnName(value);
+            return new Expression.Value.ColumnName(value);
         }
     }
 

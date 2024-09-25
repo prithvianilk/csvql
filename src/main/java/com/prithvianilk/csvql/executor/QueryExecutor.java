@@ -135,46 +135,52 @@ public class QueryExecutor {
     private boolean rowSatisfiesCondition(Conditional conditional, List<String> items) {
         return switch (conditional.predicate()) {
             case EQUALS -> {
-                Expression.ValueType lhsValue = executeExpression(conditional.lhs(), items);
-                Expression.ValueType rhsValue = executeExpression(conditional.rhs(), items);
+                ExpressionResult lhsValue = executeExpression(conditional.lhs(), items);
+                ExpressionResult rhsValue = executeExpression(conditional.rhs(), items);
                 yield Objects.equals(lhsValue, rhsValue);
             }
         };
     }
 
-    private Expression.ValueType executeExpression(Expression expression, List<String> items) {
+    private ExpressionResult executeExpression(Expression expression, List<String> items) {
         return switch (expression) {
-            case Expression.Simple(Expression.ValueType valueType) -> {
-                int intValue = getIntValue(valueType, items);
-                yield new Expression.ValueType.Int(intValue);
-            }
+            case Expression.Simple(Expression.Value value) -> getResultType(value, items);
             case Expression.Composite composite -> executeCompositeExpression(composite, items);
         };
     }
 
-    private Expression.ValueType executeCompositeExpression(Expression.Composite composite, List<String> items) {
-        int value = getIntValue(composite.valueType(), items);
-        int nextValue = getIntValue(executeExpression(composite.nextExpression(), items), items);
-
-        int finalValue = switch (composite.operation()) {
-            case PLUS -> value + nextValue;
-            case MINUS -> value - nextValue;
-        };
-
-        return new Expression.ValueType.Int(finalValue);
-    }
-
-    private int getIntValue(Expression.ValueType valueType, List<String> items) {
+    private ExpressionResult getResultType(Expression.Value valueType, List<String> items) {
         return switch (valueType) {
-            case Expression.ValueType.ColumnName(String columnName) -> getItemValue(columnName, items);
-            case Expression.ValueType.Int(int intValue) -> intValue;
-            default -> throw new QueryExecutionException.InvalidArgument();
+            case Expression.Value.ColumnName(String columnName) -> getRowResult(items, columnName);
+            case Expression.Value.Int(int value) -> new ExpressionResult.Int(value);
+            case Expression.Value.Str(String value) -> new ExpressionResult.Str(value);
         };
     }
 
-    private int getItemValue(String columnName, List<String> items) {
+    private ExpressionResult getRowResult(List<String> items, String columnName) {
         String item = items.get(columnNameToIndexMap.get(columnName));
-        return Integer.parseInt(item);
+        try {
+            return new ExpressionResult.Int(Integer.parseInt(item));
+        } catch (NumberFormatException e) {
+            return new ExpressionResult.Str(item);
+        }
+    }
+
+    private ExpressionResult executeCompositeExpression(Expression.Composite composite, List<String> items) {
+        ExpressionResult result = getResultType(composite.value(), items);
+        ExpressionResult nextResult = executeExpression(composite.nextExpression(), items);
+
+        if (result instanceof ExpressionResult.Int(int value)
+                && nextResult instanceof ExpressionResult.Int(int nextValue)) {
+            int finalValue = switch (composite.operation()) {
+                case PLUS -> value + nextValue;
+                case MINUS -> value - nextValue;
+            };
+
+            return new ExpressionResult.Int(finalValue);
+        }
+
+        throw new QueryExecutionException.InvalidArgument();
     }
 
     private Optional<String> readLine() {

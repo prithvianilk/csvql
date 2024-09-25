@@ -63,9 +63,9 @@ class ParserTest {
                         new Token.Identifier("results.csv"),
                         Collections.singletonList(
                                 new Conditional(
-                                        new Expression.Simple(new Expression.ValueType.ColumnName("a")),
+                                        new Expression.Simple(new Expression.Value.ColumnName("a")),
                                         Conditional.Predicate.EQUALS,
-                                        new Expression.Simple(new Expression.ValueType.Int(1))))));
+                                        new Expression.Simple(new Expression.Value.Int(1))))));
     }
 
     static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue() {
@@ -75,12 +75,12 @@ class ParserTest {
                         List.of(new Token.AllColumns()),
                         new Token.Identifier("results.csv"),
                         List.of(new Conditional(
-                                        new Expression.Simple(new Expression.ValueType.ColumnName("a")),
+                                        new Expression.Simple(new Expression.Value.ColumnName("a")),
                                         Conditional.Predicate.EQUALS,
-                                        new Expression.Simple(new Expression.ValueType.Int(1))),
+                                        new Expression.Simple(new Expression.Value.Int(1))),
                                 new Conditional(
-                                        new Expression.Simple(new Expression.ValueType.ColumnName("b")),
+                                        new Expression.Simple(new Expression.Value.ColumnName("b")),
                                         Conditional.Predicate.EQUALS,
-                                        new Expression.Simple(new Expression.ValueType.Int(2))))));
+                                        new Expression.Simple(new Expression.Value.Int(2))))));
     }
 }

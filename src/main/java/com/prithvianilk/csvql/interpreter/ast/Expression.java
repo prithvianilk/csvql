@@ -1,11 +1,11 @@
 package com.prithvianilk.csvql.interpreter.ast;
 
 public sealed interface Expression permits Expression.Simple, Expression.Composite {
-    record Simple(ValueType valueType) implements Expression {
+    record Simple(Value value) implements Expression {
     }
 
     record Composite(
-            ValueType valueType,
+            Value value,
             Operation operation,
             Expression nextExpression) implements Expression {
     }
@@ -14,14 +14,14 @@ public sealed interface Expression permits Expression.Simple, Expression.Composi
         PLUS, MINUS;
     }
 
-    sealed interface ValueType permits ValueType.Int, ValueType.Str, ValueType.ColumnName {
-        record Int(int value) implements ValueType {
+    sealed interface Value permits Value.Int, Value.Str, Value.ColumnName {
+        record Int(int value) implements Value {
         }
 
-        record Str(String value) implements ValueType {
+        record Str(String value) implements Value {
         }
 
-        record ColumnName(String value) implements ValueType {
+        record ColumnName(String value) implements Value {
         }
     }
 }
