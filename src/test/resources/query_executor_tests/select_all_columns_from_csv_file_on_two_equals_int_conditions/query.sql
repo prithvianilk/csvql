@@ -1,0 +1,1 @@
+select * from ./src/test/resources/query_executor_tests/select_all_columns_from_csv_file_on_two_equals_int_conditions/input.csv where a = 1 and b = 2 and c = 3
