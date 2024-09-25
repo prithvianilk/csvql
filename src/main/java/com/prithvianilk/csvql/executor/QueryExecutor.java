@@ -13,12 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,6 +25,10 @@ public class QueryExecutor {
     private final Map<String, Integer> columnNameToIndexMap;
 
     private boolean isAggregationQuery;
+
+    private List<AggregationResult> aggregationResults;
+
+    private boolean isAggregationStarted;
 
     private List<Integer> projectedColumnIndices;
 
@@ -45,6 +44,9 @@ public class QueryExecutor {
                 .columnProjections()
                 .stream()
                 .anyMatch(ColumnProjection::isAggregation);
+
+        this.aggregationResults = new ArrayList<>();
+        this.isAggregationStarted = false;
 
         initCsvReader();
     }
@@ -69,13 +71,26 @@ public class QueryExecutor {
             return;
         }
 
+        String aggregationRow = aggregationResults
+                .stream()
+                .map(AggregationResult::print)
+                .collect(Collectors.joining(","));
 
+        writer.append(aggregationRow);
+        writer.append("\n");
     }
 
     private void executeColumnNames() {
         String line = readLine().orElseThrow(QueryExecutionException.UnhandledError::new);
 
         if (isAggregationQuery) {
+            String firstRow = query.columnProjections()
+                    .stream()
+                    .map(this::print)
+                    .collect(Collectors.joining(","));
+
+            writer.append(firstRow);
+            writer.append("\n");
         } else {
             List<String> columns = Arrays.asList(line.split(","));
             initColumnNameToIndexMap(columns);
@@ -89,6 +104,24 @@ public class QueryExecutor {
             writer.append(columnNamesRow);
             writer.append("\n");
         }
+    }
+
+    private String print(ColumnProjection projection) {
+        return switch (projection) {
+            case ColumnProjection.Aggregation.Count(ColumnProjection.Aggregate.Column(Token.AllColumns())) -> {
+                yield "count(*)";
+            }
+            case ColumnProjection.Aggregation.Count(
+                    ColumnProjection.Aggregate.Column(Token.Identifier(String value))
+            ) -> {
+                yield "count(%s)".formatted(value);
+            }
+            case ColumnProjection.Aggregation.Count ignored -> throw new QueryExecutionException.InvalidArgument();
+
+            case ColumnProjection.Column(Token.AllColumns()) -> "*";
+            case ColumnProjection.Column(Token.Identifier(String value)) -> value;
+            case ColumnProjection.Column ignored -> throw new QueryExecutionException.InvalidArgument();
+        };
     }
 
     private void initColumnNameToIndexMap(List<String> columns) {
@@ -133,12 +166,43 @@ public class QueryExecutor {
             return Optional.empty();
         }
 
+        if (isAggregationQuery) {
+            executeRowAggregation();
+            return Optional.empty();
+        }
+
         String projectedRow = projectedColumnIndices
                 .stream()
                 .map(items::get)
                 .collect(Collectors.joining(","));
 
         return Optional.of(projectedRow);
+    }
+
+    private void executeRowAggregation() {
+        boolean setAggregationStarted = false;
+        for (int i = 0; i < query.columnProjections().size(); ++i) {
+            ColumnProjection projection = query.columnProjections().get(i);
+            switch (projection) {
+                case ColumnProjection.Aggregation.Count(ColumnProjection.Aggregate ignored) -> {
+                    if (isAggregationStarted) {
+                        AggregationResult existingResult = aggregationResults.get(i);
+                        if (!(existingResult instanceof AggregationResult.Int(int value))) {
+                            throw new QueryExecutionException.InvalidArgument();
+                        }
+                        aggregationResults.set(i, new AggregationResult.Int(value + 1));
+                    } else {
+                        setAggregationStarted = true;
+                        aggregationResults.add(new AggregationResult.Int(1));
+                    }
+                }
+                case ColumnProjection.Column ignored -> throw new QueryExecutionException.InvalidArgument();
+            }
+
+            if (setAggregationStarted) {
+                isAggregationStarted = true;
+            }
+        }
     }
 
     private boolean rowSatisfiesAllConditions(List<String> items) {
@@ -184,6 +248,11 @@ public class QueryExecutor {
         } catch (NumberFormatException e) {
             return new ExpressionResult.Str(item);
         }
+    }
+
+    private AggregationResult getRowAggregationResult(List<String> items, String columnName) {
+        String item = items.get(columnNameToIndexMap.get(columnName));
+        return new AggregationResult.Int(Integer.parseInt(item));
     }
 
     private ExpressionResult executeCompositeExpression(Expression.Composite composite, List<String> items) {

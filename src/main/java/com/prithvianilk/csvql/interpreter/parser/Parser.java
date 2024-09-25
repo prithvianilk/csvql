@@ -156,12 +156,14 @@ public class Parser {
     }
 
     private void parseCountAggregationColumnProjection(List<ColumnProjection> columns) {
+        currentToken = lexer.nextToken();
         expectNextToken(Token.LeftBracket.class);
         if (currentToken instanceof Token.AllColumns allColumns) {
             columns.add(ColumnProjection.Aggregation.Count.fromColumn(allColumns));
         } else if (currentToken instanceof Token.Identifier identifier) {
             columns.add(ColumnProjection.Aggregation.Count.fromColumn(identifier));
         }
+        currentToken = lexer.nextToken();
         expectNextToken(Token.RightBracket.class);
     }
 

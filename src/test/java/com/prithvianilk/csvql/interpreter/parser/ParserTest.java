@@ -32,8 +32,17 @@ class ParserTest {
                 selectSingleColumnFromCsvFile(),
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
-                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue()
+                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
+                selectCountAllColumnsFromCsvFile()
         );
+    }
+
+    static Arguments selectCountAllColumnsFromCsvFile() {
+        return Arguments.of(
+                "select count(*) from results.csv",
+                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.AllColumns())),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
     }
 
     static Arguments selectAllColumnsFromCsvFile() {
