@@ -117,12 +117,12 @@ public class Parser {
     }
 
     private void parseFrom() {
-        expectNextToken(Token.From.class);
+        expectCurrentToken(Token.From.class);
     }
 
     private void parseSelect() {
         currentToken = lexer.nextToken();
-        expectNextToken(Token.Select.class);
+        expectCurrentToken(Token.Select.class);
     }
 
     private List<ColumnProjection> parseProjections() {
@@ -137,6 +137,12 @@ public class Parser {
 
             if (currentToken instanceof Token.Count) {
                 parseCountAggregationColumnProjection(columns);
+                break;
+            }
+
+            if (currentToken instanceof Token.Sum) {
+                parseSumAggregationColumnProjection(columns);
+                break;
             }
 
             if (currentToken instanceof Token.Comma) {
@@ -156,18 +162,31 @@ public class Parser {
     }
 
     private void parseCountAggregationColumnProjection(List<ColumnProjection> columns) {
-        currentToken = lexer.nextToken();
         expectNextToken(Token.LeftBracket.class);
         if (currentToken instanceof Token.AllColumns allColumns) {
             columns.add(ColumnProjection.Aggregation.Count.fromColumn(allColumns));
         } else if (currentToken instanceof Token.Identifier identifier) {
             columns.add(ColumnProjection.Aggregation.Count.fromColumn(identifier));
         }
-        currentToken = lexer.nextToken();
+        expectNextToken(Token.RightBracket.class);
+    }
+
+    private void parseSumAggregationColumnProjection(List<ColumnProjection> columns) {
+        expectNextToken(Token.LeftBracket.class);
+        if (currentToken instanceof Token.AllColumns allColumns) {
+            columns.add(ColumnProjection.Aggregation.Sum.fromColumn(allColumns));
+        } else if (currentToken instanceof Token.Identifier identifier) {
+            columns.add(ColumnProjection.Aggregation.Sum.fromColumn(identifier));
+        }
         expectNextToken(Token.RightBracket.class);
     }
 
     private void expectNextToken(Class<? extends Token> clazz) {
+        currentToken = lexer.nextToken();
+        expectCurrentToken(clazz);
+    }
+
+    private void expectCurrentToken(Class<? extends Token> clazz) {
         if (!Objects.equals(clazz, currentToken.getClass())) {
             throw new ParserException();
         }

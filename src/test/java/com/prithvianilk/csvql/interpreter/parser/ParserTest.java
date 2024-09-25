@@ -34,24 +34,10 @@ class ParserTest {
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
                 selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
                 selectCountAllColumnsFromCsvFile(),
-                selectCountSingleColumnFromCsvFile()
+                selectCountSingleColumnFromCsvFile(),
+                selectSumAllColumnsFromCsvFile(),
+                selectSumSingleColumnFromCsvFile()
         );
-    }
-
-    static Arguments selectCountSingleColumnFromCsvFile() {
-        return Arguments.of(
-                "select count(a) from results.csv",
-                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.Identifier("a"))),
-                        new Token.Identifier("results.csv"),
-                        Collections.emptyList()));
-    }
-
-    static Arguments selectCountAllColumnsFromCsvFile() {
-        return Arguments.of(
-                "select count(*) from results.csv",
-                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.AllColumns())),
-                        new Token.Identifier("results.csv"),
-                        Collections.emptyList()));
     }
 
     static Arguments selectAllColumnsFromCsvFile() {
@@ -106,5 +92,37 @@ class ParserTest {
                                         new Expression.Simple(new Expression.Value.ColumnName("b")),
                                         Conditional.Predicate.EQUALS,
                                         new Expression.Simple(new Expression.Value.Int(2))))));
+    }
+
+    static Arguments selectCountSingleColumnFromCsvFile() {
+        return Arguments.of(
+                "select count(a) from results.csv",
+                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.Identifier("a"))),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
+    }
+
+    static Arguments selectCountAllColumnsFromCsvFile() {
+        return Arguments.of(
+                "select count(*) from results.csv",
+                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.AllColumns())),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
+    }
+
+    static Arguments selectSumAllColumnsFromCsvFile() {
+        return Arguments.of(
+                "select sum(*) from results.csv",
+                new Query(List.of(ColumnProjection.Aggregation.Sum.fromColumn(new Token.AllColumns())),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
+    }
+
+    static Arguments selectSumSingleColumnFromCsvFile() {
+        return Arguments.of(
+                "select sum(a) from results.csv",
+                new Query(List.of(ColumnProjection.Aggregation.Sum.fromColumn(new Token.Identifier("a"))),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
     }
 }
