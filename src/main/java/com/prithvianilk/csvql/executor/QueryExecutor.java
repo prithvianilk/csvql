@@ -82,6 +82,8 @@ public class QueryExecutor {
 
     private void executeColumnNames() {
         String line = readLine().orElseThrow(QueryExecutionException.UnhandledError::new);
+        List<String> columns = Arrays.asList(line.split(","));
+        initColumnNameToIndexMap(columns);
 
         if (isAggregationQuery) {
             String firstRow = query.columnProjections()
@@ -92,8 +94,6 @@ public class QueryExecutor {
             writer.append(firstRow);
             writer.append("\n");
         } else {
-            List<String> columns = Arrays.asList(line.split(","));
-            initColumnNameToIndexMap(columns);
             initProjectedColumnIndices(columns);
 
             String columnNamesRow = projectedColumnIndices
@@ -248,11 +248,6 @@ public class QueryExecutor {
         } catch (NumberFormatException e) {
             return new ExpressionResult.Str(item);
         }
-    }
-
-    private AggregationResult getRowAggregationResult(List<String> items, String columnName) {
-        String item = items.get(columnNameToIndexMap.get(columnName));
-        return new AggregationResult.Int(Integer.parseInt(item));
     }
 
     private ExpressionResult executeCompositeExpression(Expression.Composite composite, List<String> items) {

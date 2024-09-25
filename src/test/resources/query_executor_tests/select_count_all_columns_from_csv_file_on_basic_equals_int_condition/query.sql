@@ -1,0 +1,1 @@
+select count(*) from ./src/test/resources/query_executor_tests/select_count_all_columns_from_csv_file_on_basic_equals_int_condition/input.csv where a = 1
