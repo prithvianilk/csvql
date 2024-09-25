@@ -6,20 +6,20 @@ import java.util.List;
 import java.util.Optional;
 
 public record Query(
-        List<Token> columnNameTokens,
+        List<ColumnProjection> columnProjections,
         Token.Identifier csvFileName,
         List<Conditional> conditionals) {
 
     public List<String> getProjectableColumnNames() {
-        return columnNameTokens
+        return columnProjections
                 .stream()
                 .map(this::getColumnName)
                 .flatMap(Optional::stream)
                 .toList();
     }
 
-    private Optional<String> getColumnName(Token token) {
-        if (token instanceof Token.Identifier(String value)) {
+    private Optional<String> getColumnName(ColumnProjection projection) {
+        if (projection instanceof ColumnProjection.Column(Token.Identifier(String value))) {
             return Optional.of(value);
         }
         return Optional.empty();

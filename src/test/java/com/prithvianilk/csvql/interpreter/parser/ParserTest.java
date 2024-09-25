@@ -1,5 +1,6 @@
 package com.prithvianilk.csvql.interpreter.parser;
 
+import com.prithvianilk.csvql.interpreter.ast.ColumnProjection;
 import com.prithvianilk.csvql.interpreter.ast.Conditional;
 import com.prithvianilk.csvql.interpreter.ast.Expression;
 import com.prithvianilk.csvql.interpreter.ast.Query;
@@ -38,20 +39,25 @@ class ParserTest {
     static Arguments selectAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select * from results.csv",
-                new Query(List.of(new Token.AllColumns()), new Token.Identifier("results.csv"), Collections.emptyList()));
+                new Query(List.of(new ColumnProjection.Column(new Token.AllColumns())),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
     }
 
     static Arguments selectSingleColumnFromCsvFile() {
         return Arguments.of(
                 "select a from results.csv",
-                new Query(List.of(new Token.Identifier("a")), new Token.Identifier("results.csv"), Collections.emptyList()));
+                new Query(List.of(new ColumnProjection.Column(new Token.Identifier("a"))),
+                        new Token.Identifier("results.csv"),
+                        Collections.emptyList()));
     }
 
     static Arguments selectTwoColumnsFromCsvFile() {
         return Arguments.of(
                 "select a, b from results.csv",
                 new Query(
-                        List.of(new Token.Identifier("a"), new Token.Identifier("b")),
+                        List.of(new ColumnProjection.Column(new Token.Identifier("a")),
+                                new ColumnProjection.Column(new Token.Identifier("b"))),
                         new Token.Identifier("results.csv"), Collections.emptyList()));
     }
 
@@ -59,7 +65,7 @@ class ParserTest {
         return Arguments.of(
                 "select * from results.csv where a = 1",
                 new Query(
-                        List.of(new Token.AllColumns()),
+                        List.of(new ColumnProjection.Column(new Token.AllColumns())),
                         new Token.Identifier("results.csv"),
                         Collections.singletonList(
                                 new Conditional(
@@ -72,7 +78,7 @@ class ParserTest {
         return Arguments.of(
                 "select * from results.csv where a = 1 and b = 2",
                 new Query(
-                        List.of(new Token.AllColumns()),
+                        List.of(new ColumnProjection.Column(new Token.AllColumns())),
                         new Token.Identifier("results.csv"),
                         List.of(new Conditional(
                                         new Expression.Simple(new Expression.Value.ColumnName("a")),

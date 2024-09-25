@@ -1,6 +1,7 @@
 package com.prithvianilk.csvql.executor;
 
 import com.prithvianilk.csvql.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.ast.ColumnProjection;
 import com.prithvianilk.csvql.interpreter.ast.Conditional;
 import com.prithvianilk.csvql.interpreter.ast.Expression;
 import com.prithvianilk.csvql.interpreter.ast.Query;
@@ -28,6 +29,8 @@ public class QueryExecutor {
 
     private final Map<String, Integer> columnNameToIndexMap;
 
+    private boolean isAggregationQuery;
+
     private List<Integer> projectedColumnIndices;
 
     private final StringWriter writer;
@@ -37,6 +40,12 @@ public class QueryExecutor {
         this.query = parser.parse();
         this.writer = new StringWriter();
         this.columnNameToIndexMap = new HashMap<>();
+
+        this.isAggregationQuery = this.query
+                .columnProjections()
+                .stream()
+                .anyMatch(ColumnProjection::isAggregation);
+
         initCsvReader();
     }
 
@@ -51,24 +60,35 @@ public class QueryExecutor {
     public String executeQuery() {
         executeColumnNames();
         executeAllRows();
+        executeAfterRowsCompletion();
         return writer.toString();
+    }
+
+    private void executeAfterRowsCompletion() {
+        if (!isAggregationQuery) {
+            return;
+        }
+
+
     }
 
     private void executeColumnNames() {
         String line = readLine().orElseThrow(QueryExecutionException.UnhandledError::new);
 
-        List<String> columns = Arrays.asList(line.split(","));
+        if (isAggregationQuery) {
+        } else {
+            List<String> columns = Arrays.asList(line.split(","));
+            initColumnNameToIndexMap(columns);
+            initProjectedColumnIndices(columns);
 
-        initColumnNameToIndexMap(columns);
-        initProjectedColumnIndices(columns);
+            String columnNamesRow = projectedColumnIndices
+                    .stream()
+                    .map(columns::get)
+                    .collect(Collectors.joining(","));
 
-        String columnNamesRow = projectedColumnIndices
-                .stream()
-                .map(columns::get)
-                .collect(Collectors.joining(","));
-
-        writer.append(columnNamesRow);
-        writer.append("\n");
+            writer.append(columnNamesRow);
+            writer.append("\n");
+        }
     }
 
     private void initColumnNameToIndexMap(List<String> columns) {
@@ -78,7 +98,7 @@ public class QueryExecutor {
     }
 
     private void initProjectedColumnIndices(List<String> columns) {
-        if (query.columnNameTokens().getFirst() instanceof Token.AllColumns) {
+        if (query.columnProjections().getFirst() instanceof ColumnProjection.Column(Token.AllColumns())) {
             projectedColumnIndices = IntStream
                     .range(0, columns.size())
                     .boxed()

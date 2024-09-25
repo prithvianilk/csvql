@@ -1,6 +1,7 @@
 package com.prithvianilk.csvql.interpreter.parser;
 
 import com.prithvianilk.csvql.interpreter.Token;
+import com.prithvianilk.csvql.interpreter.ast.ColumnProjection;
 import com.prithvianilk.csvql.interpreter.ast.Conditional;
 import com.prithvianilk.csvql.interpreter.ast.Expression;
 import com.prithvianilk.csvql.interpreter.ast.Query;
@@ -9,6 +10,7 @@ import com.prithvianilk.csvql.interpreter.lexer.Lexer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Parser {
@@ -22,7 +24,7 @@ public class Parser {
 
     public Query parse() {
         parseSelect();
-        List<Token> columns = parserColumns();
+        List<ColumnProjection> columns = parseProjections();
         parseFrom();
         Token.Identifier csvFileName = parseCsvFileName();
         List<Conditional> conditionals = parseConditionals();
@@ -115,28 +117,26 @@ public class Parser {
     }
 
     private void parseFrom() {
-        if (!(currentToken instanceof Token.From)) {
-            throw new ParserException();
-        }
-        currentToken = lexer.nextToken();
+        expectNextToken(Token.From.class);
     }
 
     private void parseSelect() {
         currentToken = lexer.nextToken();
-        if (!(currentToken instanceof Token.Select)) {
-            throw new ParserException();
-        }
-        currentToken = lexer.nextToken();
+        expectNextToken(Token.Select.class);
     }
 
-    private List<Token> parserColumns() {
-        List<Token> columns = new ArrayList<>();
+    private List<ColumnProjection> parseProjections() {
+        List<ColumnProjection> columns = new ArrayList<>();
 
         while (true) {
             if (currentToken instanceof Token.AllColumns allColumns) {
-                columns.add(allColumns);
+                columns.add(new ColumnProjection.Column(allColumns));
                 currentToken = lexer.nextToken();
                 break;
+            }
+
+            if (currentToken instanceof Token.Count) {
+                parseCountAggregationColumnProjection(columns);
             }
 
             if (currentToken instanceof Token.Comma) {
@@ -148,10 +148,27 @@ public class Parser {
                 break;
             }
 
-            columns.add(identifier);
+            columns.add(new ColumnProjection.Column(identifier));
             currentToken = lexer.nextToken();
         }
 
         return columns;
+    }
+
+    private void parseCountAggregationColumnProjection(List<ColumnProjection> columns) {
+        expectNextToken(Token.LeftBracket.class);
+        if (currentToken instanceof Token.AllColumns allColumns) {
+            columns.add(ColumnProjection.Aggregation.Count.fromColumn(allColumns));
+        } else if (currentToken instanceof Token.Identifier identifier) {
+            columns.add(ColumnProjection.Aggregation.Count.fromColumn(identifier));
+        }
+        expectNextToken(Token.RightBracket.class);
+    }
+
+    private void expectNextToken(Class<? extends Token> clazz) {
+        if (!Objects.equals(clazz, currentToken.getClass())) {
+            throw new ParserException();
+        }
+        currentToken = lexer.nextToken();
     }
 }
