@@ -1,6 +1,5 @@
 package com.prithvianilk.csvql.interpreter.lexer;
 
-import com.prithvianilk.csvql.interpreter.lexer.Lexer;
 import com.prithvianilk.csvql.interpreter.Token;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,8 +30,36 @@ class LexerTest {
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
                 selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
                 selectCountAllColumnsFromCsvFile(),
-                selectCountSingleColumnFromCsvFile()
+                selectCountSingleColumnFromCsvFile(),
+                selectSumAllColumnsFromCsvFile(),
+                selectSumSingleColumnFromCsvFile()
         );
+    }
+
+    static Arguments selectSumAllColumnsFromCsvFile() {
+        return Arguments.of(
+                "select sum(*) from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Sum(),
+                        new Token.LeftBracket(),
+                        new Token.AllColumns(),
+                        new Token.RightBracket(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
+    }
+
+    static Arguments selectSumSingleColumnFromCsvFile() {
+        return Arguments.of(
+                "select sum(a) from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Sum(),
+                        new Token.LeftBracket(),
+                        new Token.Identifier("a"),
+                        new Token.RightBracket(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
     }
 
     static Arguments selectCountAllColumnsFromCsvFile() {

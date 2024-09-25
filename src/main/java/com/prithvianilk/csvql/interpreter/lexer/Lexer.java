@@ -50,6 +50,7 @@ public class Lexer {
             case "where" -> new Token.Where();
             case "and" -> new Token.And();
             case "count" -> new Token.Count();
+            case "sum" -> new Token.Sum();
             case EOF_STRING -> new Token.Eof();
             default -> new Token.Identifier(word);
         };
