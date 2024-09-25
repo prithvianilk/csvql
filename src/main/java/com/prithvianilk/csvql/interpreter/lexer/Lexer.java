@@ -43,10 +43,13 @@ public class Lexer {
             case "=" -> new Token.Equals();
             case "+" -> new Token.Plus();
             case "-" -> new Token.Minus();
+            case "(" -> new Token.LeftBracket();
+            case ")" -> new Token.RightBracket();
             case "select" -> new Token.Select();
             case "from" -> new Token.From();
             case "where" -> new Token.Where();
             case "and" -> new Token.And();
+            case "count" -> new Token.Count();
             case EOF_STRING -> new Token.Eof();
             default -> new Token.Identifier(word);
         };
@@ -64,12 +67,12 @@ public class Lexer {
             c = readCharacter();
         }
 
-        if (c == EOF || c == '*' || c == ',' || c == '=') {
+        if (c == EOF || c == '*' || c == ',' || c == '=' || c == '(' || c == ')') {
             return String.valueOf(c);
         }
 
         StringWriter wordWriter = new StringWriter();
-        while (!(c == EOF || c == ' ' || c == ',')) {
+        while (!(c == EOF || c == ' ' || c == ',' || c == '(' || c == ')')) {
             wordWriter.append(c);
             c = readCharacter();
         }

@@ -29,8 +29,37 @@ class LexerTest {
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
-                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue()
+                selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
+                selectCountAllColumnsFromCsvFile(),
+                selectCountSingleColumnFromCsvFile()
         );
+    }
+
+    static Arguments selectCountAllColumnsFromCsvFile() {
+        return Arguments.of(
+                "select count(*) from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Count(),
+                        new Token.LeftBracket(),
+                        new Token.AllColumns(),
+                        new Token.RightBracket(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
+    }
+
+
+    static Arguments selectCountSingleColumnFromCsvFile() {
+        return Arguments.of(
+                "select count(a) from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Count(),
+                        new Token.LeftBracket(),
+                        new Token.Identifier("a"),
+                        new Token.RightBracket(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
     }
 
     static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue() {
