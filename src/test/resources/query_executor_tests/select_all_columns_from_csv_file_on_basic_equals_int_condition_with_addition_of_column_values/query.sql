@@ -1,1 +1,1 @@
-select * from ./src/test/resources/query_executor_tests/select_all_columns_from_csv_file/input.csv where a + b = c
+select * from ./src/test/resources/query_executor_tests/select_all_columns_from_csv_file_on_basic_equals_int_condition_with_addition_of_column_values/input.csv where a + b = c

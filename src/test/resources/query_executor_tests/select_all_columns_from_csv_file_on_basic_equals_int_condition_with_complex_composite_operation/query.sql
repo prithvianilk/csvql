@@ -1,0 +1,1 @@
+select * from ./src/test/resources/query_executor_tests/select_all_columns_from_csv_file_on_basic_equals_int_condition_with_complex_composite_operation/input.csv where a + b + 1 = c - 1
