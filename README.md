@@ -21,3 +21,9 @@ yet another cli tool to query a csv w/ sql
 ```sh
 ./bin/csvql csvql 'select * from file.csv where col1 + col2 = 2'
 ```
+
+## TODO
+
+- [ ] support column aggregations - count, sum
+- [ ] support multiply, divide on int
+- [ ] support lesser than, greater than, and respective equals conditions for int
