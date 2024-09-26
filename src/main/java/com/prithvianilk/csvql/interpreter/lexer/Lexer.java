@@ -41,6 +41,10 @@ public class Lexer {
             case "*" -> new Token.Asterisks();
             case "," -> new Token.Comma();
             case "=" -> new Token.Equals();
+            case "<" -> new Token.LesserThan();
+            case ">" -> new Token.GreaterThan();
+            case "<=" -> new Token.LesserThanEquals();
+            case ">=" -> new Token.GreaterThanEquals();
             case "+" -> new Token.Plus();
             case "-" -> new Token.Minus();
             case "/" -> new Token.Division();

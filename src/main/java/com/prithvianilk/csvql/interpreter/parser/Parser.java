@@ -108,12 +108,18 @@ public class Parser {
     }
 
     private Conditional.Predicate parsePredicate() {
-        if (!(currentToken instanceof Token.Equals)) {
-            throw new ParserException();
+        try {
+            return switch (currentToken) {
+                case Token.Equals ignored -> Conditional.Predicate.EQUALS;
+                case Token.GreaterThan ignored -> Conditional.Predicate.GREATER_THAN;
+                case Token.GreaterThanEquals ignored -> Conditional.Predicate.GREATER_THAN_EQUALS;
+                case Token.LesserThan ignored -> Conditional.Predicate.LESSER_THAN;
+                case Token.LesserThanEquals ignored -> Conditional.Predicate.LESSER_THAN_EQUALS;
+                default -> throw new ParserException();
+            };
+        } finally {
+            currentToken = lexer.nextToken();
         }
-        currentToken = lexer.nextToken();
-
-        return Conditional.Predicate.EQUALS;
     }
 
     private Token.Identifier parseCsvFileName() {

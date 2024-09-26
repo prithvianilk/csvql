@@ -256,11 +256,42 @@ public class QueryExecutor {
     }
 
     private boolean rowSatisfiesCondition(Conditional conditional, List<String> items) {
+        ExpressionResult lhsResult = executeExpression(conditional.lhs(), items);
+        ExpressionResult rhsResult = executeExpression(conditional.rhs(), items);
+
         return switch (conditional.predicate()) {
-            case EQUALS -> {
-                ExpressionResult lhsValue = executeExpression(conditional.lhs(), items);
-                ExpressionResult rhsValue = executeExpression(conditional.rhs(), items);
-                yield Objects.equals(lhsValue, rhsValue);
+            case EQUALS -> Objects.equals(lhsResult, rhsResult);
+            case LESSER_THAN -> {
+                if (!(lhsResult instanceof ExpressionResult.Int(int lhs)
+                        && rhsResult instanceof ExpressionResult.Int(int rhs))) {
+                    throw new QueryExecutionException.InvalidArgument();
+                }
+
+                yield lhs < rhs;
+            }
+            case GREATER_THAN -> {
+                if (!(lhsResult instanceof ExpressionResult.Int(int lhs)
+                        && rhsResult instanceof ExpressionResult.Int(int rhs))) {
+                    throw new QueryExecutionException.InvalidArgument();
+                }
+
+                yield lhs > rhs;
+            }
+            case LESSER_THAN_EQUALS -> {
+                if (!(lhsResult instanceof ExpressionResult.Int(int lhs)
+                        && rhsResult instanceof ExpressionResult.Int(int rhs))) {
+                    throw new QueryExecutionException.InvalidArgument();
+                }
+
+                yield lhs <= rhs;
+            }
+            case GREATER_THAN_EQUALS -> {
+                if (!(lhsResult instanceof ExpressionResult.Int(int lhs)
+                        && rhsResult instanceof ExpressionResult.Int(int rhs))) {
+                    throw new QueryExecutionException.InvalidArgument();
+                }
+
+                yield lhs >= rhs;
             }
         };
     }

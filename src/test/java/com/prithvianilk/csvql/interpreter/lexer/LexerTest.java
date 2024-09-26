@@ -27,6 +27,10 @@ class LexerTest {
                 selectSingleColumnWithUnderscoreFromCsvFile(),
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnLesserThanIntegerValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnLesserThanEqualsIntegerValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnGreaterThenIntegerValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnGreaterThanEqualsIntegerValue(),
                 selectSingleColumnDividedByTwoFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValueContainingSpace(),
@@ -119,6 +123,62 @@ class LexerTest {
                         new Token.Identifier("b"),
                         new Token.Equals(),
                         new Token.Identifier("2")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnLesserThanIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a < 1",
+                List.of(
+                        new Token.Select(),
+                        new Token.Asterisks(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.LesserThan(),
+                        new Token.Identifier("1")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnLesserThanEqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a <= 1",
+                List.of(
+                        new Token.Select(),
+                        new Token.Asterisks(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.LesserThanEquals(),
+                        new Token.Identifier("1")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnGreaterThenIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a > 1",
+                List.of(
+                        new Token.Select(),
+                        new Token.Asterisks(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.GreaterThan(),
+                        new Token.Identifier("1")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnGreaterThanEqualsIntegerValue() {
+        return Arguments.of(
+                "select * from results.csv where a >= 1",
+                List.of(
+                        new Token.Select(),
+                        new Token.Asterisks(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.GreaterThanEquals(),
+                        new Token.Identifier("1")));
     }
 
     static Arguments selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue() {

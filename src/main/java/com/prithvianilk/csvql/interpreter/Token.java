@@ -1,6 +1,6 @@
 package com.prithvianilk.csvql.interpreter;
 
-public sealed interface Token permits Token.And, Token.Asterisks, Token.Comma, Token.Count, Token.Division, Token.Eof, Token.Equals, Token.From, Token.Identifier, Token.LeftBracket, Token.Minus, Token.Plus, Token.RightBracket, Token.Select, Token.Sum, Token.Where {
+public sealed interface Token permits Token.And, Token.Asterisks, Token.Comma, Token.Count, Token.Division, Token.Eof, Token.Equals, Token.From, Token.GreaterThan, Token.GreaterThanEquals, Token.Identifier, Token.LeftBracket, Token.LesserThan, Token.LesserThanEquals, Token.Minus, Token.Plus, Token.RightBracket, Token.Select, Token.Sum, Token.Where {
 
     record Select() implements Token {
     }
@@ -48,6 +48,18 @@ public sealed interface Token permits Token.And, Token.Asterisks, Token.Comma, T
     }
 
     record RightBracket() implements Token {
+    }
+
+    record LesserThan() implements Token {
+    }
+
+    record GreaterThan() implements Token {
+    }
+
+    record LesserThanEquals() implements Token {
+    }
+
+    record GreaterThanEquals() implements Token {
     }
 }
 
