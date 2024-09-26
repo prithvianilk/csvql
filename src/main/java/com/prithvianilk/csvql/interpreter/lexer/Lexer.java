@@ -38,11 +38,12 @@ public class Lexer {
         String word = readWord();
 
         return switch (word) {
-            case "*" -> new Token.AllColumns();
+            case "*" -> new Token.Asterisks();
             case "," -> new Token.Comma();
             case "=" -> new Token.Equals();
             case "+" -> new Token.Plus();
             case "-" -> new Token.Minus();
+            case "/" -> new Token.Divide();
             case "(" -> new Token.LeftBracket();
             case ")" -> new Token.RightBracket();
             case "select" -> new Token.Select();
@@ -72,7 +73,7 @@ public class Lexer {
             return readStringInDoubleQuotes();
         }
 
-        if (c == EOF || c == '*' || c == ',' || c == '=' || c == '(' || c == ')') {
+        if (c == EOF || c == '*' || c == '/' || c == ',' || c == '=' || c == '(' || c == ')') {
             return String.valueOf(c);
         }
 

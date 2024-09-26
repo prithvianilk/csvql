@@ -129,8 +129,8 @@ public class Parser {
         List<ColumnProjection> columns = new ArrayList<>();
 
         while (true) {
-            if (currentToken instanceof Token.AllColumns allColumns) {
-                columns.add(new ColumnProjection.Column(allColumns));
+            if (currentToken instanceof Token.Asterisks asterisks) {
+                columns.add(new ColumnProjection.Column(asterisks));
                 currentToken = lexer.nextToken();
                 break;
             }
@@ -163,8 +163,8 @@ public class Parser {
 
     private void parseCountAggregationColumnProjection(List<ColumnProjection> columns) {
         expectNextToken(Token.LeftBracket.class);
-        if (currentToken instanceof Token.AllColumns allColumns) {
-            columns.add(ColumnProjection.Aggregation.Count.fromColumn(allColumns));
+        if (currentToken instanceof Token.Asterisks asterisks) {
+            columns.add(ColumnProjection.Aggregation.Count.fromColumn(asterisks));
         } else if (currentToken instanceof Token.Identifier identifier) {
             columns.add(ColumnProjection.Aggregation.Count.fromColumn(identifier));
         }
@@ -173,8 +173,8 @@ public class Parser {
 
     private void parseSumAggregationColumnProjection(List<ColumnProjection> columns) {
         expectNextToken(Token.LeftBracket.class);
-        if (currentToken instanceof Token.AllColumns allColumns) {
-            columns.add(ColumnProjection.Aggregation.Sum.fromColumn(allColumns));
+        if (currentToken instanceof Token.Asterisks asterisks) {
+            columns.add(ColumnProjection.Aggregation.Sum.fromColumn(asterisks));
         } else if (currentToken instanceof Token.Identifier identifier) {
             columns.add(ColumnProjection.Aggregation.Sum.fromColumn(identifier));
         }

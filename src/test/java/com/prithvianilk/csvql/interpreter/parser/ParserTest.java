@@ -43,7 +43,7 @@ class ParserTest {
     static Arguments selectAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select * from results.csv",
-                new Query(List.of(new ColumnProjection.Column(new Token.AllColumns())),
+                new Query(List.of(new ColumnProjection.Column(new Token.Asterisks())),
                         new Token.Identifier("results.csv"),
                         Collections.emptyList()));
     }
@@ -69,7 +69,7 @@ class ParserTest {
         return Arguments.of(
                 "select * from results.csv where a = 1",
                 new Query(
-                        List.of(new ColumnProjection.Column(new Token.AllColumns())),
+                        List.of(new ColumnProjection.Column(new Token.Asterisks())),
                         new Token.Identifier("results.csv"),
                         Collections.singletonList(
                                 new Conditional(
@@ -82,7 +82,7 @@ class ParserTest {
         return Arguments.of(
                 "select * from results.csv where a = 1 and b = 2",
                 new Query(
-                        List.of(new ColumnProjection.Column(new Token.AllColumns())),
+                        List.of(new ColumnProjection.Column(new Token.Asterisks())),
                         new Token.Identifier("results.csv"),
                         List.of(new Conditional(
                                         new Expression.Simple(new Expression.Value.ColumnName("a")),
@@ -105,7 +105,7 @@ class ParserTest {
     static Arguments selectCountAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select count(*) from results.csv",
-                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.AllColumns())),
+                new Query(List.of(ColumnProjection.Aggregation.Count.fromColumn(new Token.Asterisks())),
                         new Token.Identifier("results.csv"),
                         Collections.emptyList()));
     }
@@ -113,7 +113,7 @@ class ParserTest {
     static Arguments selectSumAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select sum(*) from results.csv",
-                new Query(List.of(ColumnProjection.Aggregation.Sum.fromColumn(new Token.AllColumns())),
+                new Query(List.of(ColumnProjection.Aggregation.Sum.fromColumn(new Token.Asterisks())),
                         new Token.Identifier("results.csv"),
                         Collections.emptyList()));
     }

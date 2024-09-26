@@ -114,7 +114,7 @@ public class QueryExecutor {
 
     private String print(ColumnProjection projection) {
         return switch (projection) {
-            case ColumnProjection.Aggregation.Count(ColumnProjection.Aggregate.Column(Token.AllColumns())) -> {
+            case ColumnProjection.Aggregation.Count(ColumnProjection.Aggregate.Column(Token.Asterisks())) -> {
                 yield "count(*)";
             }
             case ColumnProjection.Aggregation.Count(
@@ -124,7 +124,7 @@ public class QueryExecutor {
             }
             case ColumnProjection.Aggregation.Count ignored -> throw new QueryExecutionException.InvalidArgument();
 
-            case ColumnProjection.Aggregation.Sum(ColumnProjection.Aggregate.Column(Token.AllColumns())) -> {
+            case ColumnProjection.Aggregation.Sum(ColumnProjection.Aggregate.Column(Token.Asterisks())) -> {
                 yield "sum(*)";
             }
             case ColumnProjection.Aggregation.Sum(
@@ -134,7 +134,7 @@ public class QueryExecutor {
             }
             case ColumnProjection.Aggregation.Sum ignored -> throw new QueryExecutionException.InvalidArgument();
 
-            case ColumnProjection.Column(Token.AllColumns()) -> "*";
+            case ColumnProjection.Column(Token.Asterisks()) -> "*";
             case ColumnProjection.Column(Token.Identifier(String value)) -> value;
             case ColumnProjection.Column ignored -> throw new QueryExecutionException.InvalidArgument();
         };
@@ -147,7 +147,7 @@ public class QueryExecutor {
     }
 
     private void initProjectedColumnIndices(List<String> columns) {
-        if (query.columnProjections().getFirst() instanceof ColumnProjection.Column(Token.AllColumns())) {
+        if (query.columnProjections().getFirst() instanceof ColumnProjection.Column(Token.Asterisks())) {
             projectedColumnIndices = IntStream
                     .range(0, columns.size())
                     .boxed()

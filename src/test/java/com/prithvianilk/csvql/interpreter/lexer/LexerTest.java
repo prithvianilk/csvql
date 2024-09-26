@@ -27,6 +27,7 @@ class LexerTest {
                 selectSingleColumnWithUnderscoreFromCsvFile(),
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
+                selectSingleColumnDividedByTwoFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValueContainingSpace(),
                 selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
@@ -37,6 +38,18 @@ class LexerTest {
         );
     }
 
+    static Arguments selectSingleColumnDividedByTwoFromCsvFile() {
+        return Arguments.of(
+                "select a / 100 from results.csv",
+                List.of(
+                        new Token.Select(),
+                        new Token.Identifier("a"),
+                        new Token.Divide(),
+                        new Token.Identifier("100"),
+                        new Token.From(),
+                        new Token.Identifier("results.csv")));
+    }
+
     static Arguments selectSumAllColumnsFromCsvFile() {
         return Arguments.of(
                 "select sum(*) from results.csv",
@@ -44,7 +57,7 @@ class LexerTest {
                         new Token.Select(),
                         new Token.Sum(),
                         new Token.LeftBracket(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.RightBracket(),
                         new Token.From(),
                         new Token.Identifier("results.csv")));
@@ -70,7 +83,7 @@ class LexerTest {
                         new Token.Select(),
                         new Token.Count(),
                         new Token.LeftBracket(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.RightBracket(),
                         new Token.From(),
                         new Token.Identifier("results.csv")));
@@ -95,7 +108,7 @@ class LexerTest {
                 "select * from results.csv where a = 1 and b = 2",
                 List.of(
                         new Token.Select(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.From(),
                         new Token.Identifier("results.csv"),
                         new Token.Where(),
@@ -113,7 +126,7 @@ class LexerTest {
                 "select * from results.csv where a = 1",
                 List.of(
                         new Token.Select(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.From(),
                         new Token.Identifier("results.csv"),
                         new Token.Where(),
@@ -127,7 +140,7 @@ class LexerTest {
                 "select * from results.csv where a = \"lol\"",
                 List.of(
                         new Token.Select(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.From(),
                         new Token.Identifier("results.csv"),
                         new Token.Where(),
@@ -141,7 +154,7 @@ class LexerTest {
                 "select * from results.csv where a = \"lol gg\"",
                 List.of(
                         new Token.Select(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.From(),
                         new Token.Identifier("results.csv"),
                         new Token.Where(),
@@ -155,7 +168,7 @@ class LexerTest {
                 "select * from results.csv",
                 List.of(
                         new Token.Select(),
-                        new Token.AllColumns(),
+                        new Token.Asterisks(),
                         new Token.From(),
                         new Token.Identifier("results.csv")));
     }
