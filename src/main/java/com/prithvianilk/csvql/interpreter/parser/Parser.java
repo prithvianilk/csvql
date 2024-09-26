@@ -82,6 +82,14 @@ public class Parser {
                 currentToken = lexer.nextToken();
                 yield new Expression.Composite(valueType, Expression.Operation.MINUS, parseExpression());
             }
+            case Token.Asterisks ignored -> {
+                currentToken = lexer.nextToken();
+                yield new Expression.Composite(valueType, Expression.Operation.MULTIPLY, parseExpression());
+            }
+            case Token.Division ignored -> {
+                currentToken = lexer.nextToken();
+                yield new Expression.Composite(valueType, Expression.Operation.DIVIDE, parseExpression());
+            }
             default -> new Expression.Simple(valueType);
         };
     }

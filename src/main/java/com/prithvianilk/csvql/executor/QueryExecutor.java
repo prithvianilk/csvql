@@ -303,6 +303,8 @@ public class QueryExecutor {
             int finalValue = switch (composite.operation()) {
                 case PLUS -> value + nextValue;
                 case MINUS -> value - nextValue;
+                case MULTIPLY -> value * nextValue;
+                case DIVIDE -> value / nextValue;
             };
 
             return new ExpressionResult.Int(finalValue);

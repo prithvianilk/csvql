@@ -33,6 +33,8 @@ class ParserTest {
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
                 selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
+                selectAllColumnsFromCsvFileWhereColumn1EqualsColumn2MultipliedByTwo(),
+                selectAllColumnsFromCsvFileWhereColumn1EqualsColumn2DividedByTwo(),
                 selectCountAllColumnsFromCsvFile(),
                 selectCountSingleColumnFromCsvFile(),
                 selectSumAllColumnsFromCsvFile(),
@@ -92,6 +94,32 @@ class ParserTest {
                                         new Expression.Simple(new Expression.Value.ColumnName("b")),
                                         Conditional.Predicate.EQUALS,
                                         new Expression.Simple(new Expression.Value.Int(2))))));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsColumn2MultipliedByTwo() {
+        return Arguments.of(
+                "select * from results.csv where a = b * 2",
+                new Query(
+                        List.of(new ColumnProjection.Column(new Token.Asterisks())),
+                        new Token.Identifier("results.csv"),
+                        List.of(new Conditional(
+                                new Expression.Simple(new Expression.Value.ColumnName("a")),
+                                Conditional.Predicate.EQUALS,
+                                new Expression.Composite(new Expression.Value.ColumnName("b"), Expression.Operation.MULTIPLY, new Expression.Simple(new Expression.Value.Int(2))))
+                        )));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereColumn1EqualsColumn2DividedByTwo() {
+        return Arguments.of(
+                "select * from results.csv where a = b / 2",
+                new Query(
+                        List.of(new ColumnProjection.Column(new Token.Asterisks())),
+                        new Token.Identifier("results.csv"),
+                        List.of(new Conditional(
+                                new Expression.Simple(new Expression.Value.ColumnName("a")),
+                                Conditional.Predicate.EQUALS,
+                                new Expression.Composite(new Expression.Value.ColumnName("b"), Expression.Operation.DIVIDE, new Expression.Simple(new Expression.Value.Int(2))))
+                        )));
     }
 
     static Arguments selectCountSingleColumnFromCsvFile() {

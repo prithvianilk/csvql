@@ -44,7 +44,7 @@ class LexerTest {
                 List.of(
                         new Token.Select(),
                         new Token.Identifier("a"),
-                        new Token.Divide(),
+                        new Token.Division(),
                         new Token.Identifier("100"),
                         new Token.From(),
                         new Token.Identifier("results.csv")));

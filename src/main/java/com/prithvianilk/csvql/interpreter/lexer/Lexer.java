@@ -43,7 +43,7 @@ public class Lexer {
             case "=" -> new Token.Equals();
             case "+" -> new Token.Plus();
             case "-" -> new Token.Minus();
-            case "/" -> new Token.Divide();
+            case "/" -> new Token.Division();
             case "(" -> new Token.LeftBracket();
             case ")" -> new Token.RightBracket();
             case "select" -> new Token.Select();

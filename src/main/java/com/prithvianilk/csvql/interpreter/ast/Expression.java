@@ -11,7 +11,7 @@ public sealed interface Expression permits Expression.Simple, Expression.Composi
     }
 
     enum Operation {
-        PLUS, MINUS;
+        PLUS, MINUS, MULTIPLY, DIVIDE
     }
 
     sealed interface Value permits Value.Int, Value.Str, Value.ColumnName {
