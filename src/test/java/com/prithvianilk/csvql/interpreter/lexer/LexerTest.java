@@ -28,6 +28,7 @@ class LexerTest {
                 selectTwoColumnsFromCsvFile(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsIntegerValue(),
                 selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValue(),
+                selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValueContainingSpace(),
                 selectAllColumnsFromCsvFileWhereColumn1EqualsIntegerValueAndColumn2EqualsIntegerValue(),
                 selectCountAllColumnsFromCsvFile(),
                 selectCountSingleColumnFromCsvFile(),
@@ -133,6 +134,20 @@ class LexerTest {
                         new Token.Identifier("a"),
                         new Token.Equals(),
                         new Token.Identifier("\"lol\"")));
+    }
+
+    static Arguments selectAllColumnsFromCsvFileWhereSingleColumnEqualsStringValueContainingSpace() {
+        return Arguments.of(
+                "select * from results.csv where a = \"lol gg\"",
+                List.of(
+                        new Token.Select(),
+                        new Token.AllColumns(),
+                        new Token.From(),
+                        new Token.Identifier("results.csv"),
+                        new Token.Where(),
+                        new Token.Identifier("a"),
+                        new Token.Equals(),
+                        new Token.Identifier("\"lol gg\"")));
     }
 
     static Arguments selectAllColumnsFromCsvFile() {

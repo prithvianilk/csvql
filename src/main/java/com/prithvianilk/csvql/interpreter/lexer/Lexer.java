@@ -68,6 +68,10 @@ public class Lexer {
             c = readCharacter();
         }
 
+        if (c == '"') {
+            return readStringInDoubleQuotes();
+        }
+
         if (c == EOF || c == '*' || c == ',' || c == '=' || c == '(' || c == ')') {
             return String.valueOf(c);
         }
@@ -82,6 +86,19 @@ public class Lexer {
             oldChar = OptionalInt.of(c);
         }
 
+        return wordWriter.toString();
+    }
+
+    private String readStringInDoubleQuotes() {
+        char c = readCharacter();
+
+        StringWriter wordWriter = new StringWriter();
+        wordWriter.append('"');
+        while (c != '"') {
+            wordWriter.append(c);
+            c = readCharacter();
+        }
+        wordWriter.append('"');
         return wordWriter.toString();
     }
 
