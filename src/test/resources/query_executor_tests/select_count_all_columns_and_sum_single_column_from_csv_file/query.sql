@@ -1,0 +1,1 @@
+select count(*),sum(a) from ./src/test/resources/query_executor_tests/select_count_all_columns_and_sum_single_column_from_csv_file/input.csv

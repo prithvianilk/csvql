@@ -137,12 +137,12 @@ public class Parser {
 
             if (currentToken instanceof Token.Count) {
                 parseCountAggregationColumnProjection(columns);
-                break;
+                continue;
             }
 
             if (currentToken instanceof Token.Sum) {
                 parseSumAggregationColumnProjection(columns);
-                break;
+                continue;
             }
 
             if (currentToken instanceof Token.Comma) {

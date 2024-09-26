@@ -13,7 +13,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,9 +30,9 @@ public class QueryExecutor {
 
     private final Map<String, Integer> columnNameToIndexMap;
 
-    private boolean isAggregationQuery;
+    private final boolean isAggregationQuery;
 
-    private List<AggregationResult> aggregationResults;
+    private final List<AggregationResult> aggregationResults;
 
     private boolean isAggregationStarted;
 
@@ -118,6 +124,16 @@ public class QueryExecutor {
             }
             case ColumnProjection.Aggregation.Count ignored -> throw new QueryExecutionException.InvalidArgument();
 
+            case ColumnProjection.Aggregation.Sum(ColumnProjection.Aggregate.Column(Token.AllColumns())) -> {
+                yield "sum(*)";
+            }
+            case ColumnProjection.Aggregation.Sum(
+                    ColumnProjection.Aggregate.Column(Token.Identifier(String value))
+            ) -> {
+                yield "sum(%s)".formatted(value);
+            }
+            case ColumnProjection.Aggregation.Sum ignored -> throw new QueryExecutionException.InvalidArgument();
+
             case ColumnProjection.Column(Token.AllColumns()) -> "*";
             case ColumnProjection.Column(Token.Identifier(String value)) -> value;
             case ColumnProjection.Column ignored -> throw new QueryExecutionException.InvalidArgument();
@@ -167,7 +183,7 @@ public class QueryExecutor {
         }
 
         if (isAggregationQuery) {
-            executeRowAggregation();
+            executeRowAggregation(items);
             return Optional.empty();
         }
 
@@ -179,29 +195,52 @@ public class QueryExecutor {
         return Optional.of(projectedRow);
     }
 
-    private void executeRowAggregation() {
-        boolean setAggregationStarted = false;
+    private void executeRowAggregation(List<String> items) {
         for (int i = 0; i < query.columnProjections().size(); ++i) {
             ColumnProjection projection = query.columnProjections().get(i);
             switch (projection) {
                 case ColumnProjection.Aggregation.Count(ColumnProjection.Aggregate ignored) -> {
-                    if (isAggregationStarted) {
-                        AggregationResult existingResult = aggregationResults.get(i);
-                        if (!(existingResult instanceof AggregationResult.Int(int value))) {
-                            throw new QueryExecutionException.InvalidArgument();
-                        }
-                        aggregationResults.set(i, new AggregationResult.Int(value + 1));
-                    } else {
-                        setAggregationStarted = true;
-                        aggregationResults.add(new AggregationResult.Int(1));
-                    }
+                    executeCountAggregation(i);
                 }
                 case ColumnProjection.Column ignored -> throw new QueryExecutionException.InvalidArgument();
+
+                case ColumnProjection.Aggregation.Sum(
+                        ColumnProjection.Aggregate.Column(Token.Identifier(String columnName))
+                ) -> {
+                    executeSumAggregation(items, columnName, i);
+                }
+                case ColumnProjection.Aggregation.Sum ignored -> throw new QueryExecutionException.InvalidArgument();
+            }
+        }
+
+        isAggregationStarted = true;
+    }
+
+    private void executeSumAggregation(List<String> items, String columnName, int i) {
+        AggregationResult aggregationResult = getRowAggregationResult(items, columnName);
+
+        if (isAggregationStarted) {
+            AggregationResult existingResult = aggregationResults.get(i);
+            if (!(aggregationResult instanceof AggregationResult.Int(int value) &&
+                    existingResult instanceof AggregationResult.Int(int existingValue))) {
+                throw new QueryExecutionException.InvalidArgument();
             }
 
-            if (setAggregationStarted) {
-                isAggregationStarted = true;
+            aggregationResults.set(i, new AggregationResult.Int(value + existingValue));
+        } else {
+            aggregationResults.add(aggregationResult);
+        }
+    }
+
+    private void executeCountAggregation(int i) {
+        if (isAggregationStarted) {
+            AggregationResult existingResult = aggregationResults.get(i);
+            if (!(existingResult instanceof AggregationResult.Int(int value))) {
+                throw new QueryExecutionException.InvalidArgument();
             }
+            aggregationResults.set(i, new AggregationResult.Int(value + 1));
+        } else {
+            aggregationResults.add(new AggregationResult.Int(1));
         }
     }
 
@@ -248,6 +287,11 @@ public class QueryExecutor {
         } catch (NumberFormatException e) {
             return new ExpressionResult.Str(item);
         }
+    }
+
+    private AggregationResult getRowAggregationResult(List<String> items, String columnName) {
+        String item = items.get(columnNameToIndexMap.get(columnName));
+        return new AggregationResult.Int(Integer.parseInt(item));
     }
 
     private ExpressionResult executeCompositeExpression(Expression.Composite composite, List<String> items) {

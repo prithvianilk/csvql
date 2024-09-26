@@ -1,0 +1,1 @@
+select sum(a),sum(b),sum(c) from ./src/test/resources/query_executor_tests/select_sum_all_columns_from_csv_file/input.csv
